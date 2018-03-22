@@ -2,12 +2,12 @@
 /*Author: Narek Galstyan*/
 
 // set to null to create a maze from scratch
-final String LOADMAZE = null;//"maze4x4onlineGenerated.txt";
+final String LOADMAZE = null;//"maze16x16onlineGenerated.txt";
 
 // go change size accordingly if these are chagned!
 final float PADDING = 5;
 final float BLOCK = 50;
-final int BLOCK_CNT = 4;
+final int BLOCK_CNT = 16;
 final float DIM = BLOCK_CNT * BLOCK + 2* PADDING;
 final float CONTROLS = 100;
 
@@ -190,7 +190,7 @@ void setup() {
         for (int j =0; j < maze.length; j++)
           maze[i][j] = N|S|E|W;
   } else maze = loadMaze(LOADMAZE);
-  size(310,210);// BLOCK * BLOCK_CNT + PADDING * 2 + CONTROLS, BLOCK * BLOCK_CNT + PADDING * 2
+  size(910,810);// BLOCK * BLOCK_CNT + PADDING * 2 + CONTROLS, BLOCK * BLOCK_CNT + PADDING * 2
   if (! isValid(maze))println("INVALID MAZE in setup !!");
 
   drawMaze();
