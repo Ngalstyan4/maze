@@ -1,6 +1,15 @@
 /*maze simulator*/
 /*Author: Narek Galstyan*/
 
+// set to null to create a maze from scratch
+final String LOADMAZE = null;//"maze4x4onlineGenerated.txt";
+
+// go change size accordingly if these are chagned!
+final float PADDING = 5;
+final float BLOCK = 50;
+final int BLOCK_CNT = 4;
+final float DIM = BLOCK_CNT * BLOCK + 2* PADDING;
+final float CONTROLS = 100;
 
 final byte N = 0b0001; 
 final byte S = 0b0010;
@@ -66,6 +75,40 @@ void drawMaze() {
   }
 }
 
+void saveMaze() {
+  String[] sMaze = new String[maze.length];
+  for (int i = 0; i < maze.length; i++) {
+    sMaze[i] = "";
+    for (int j = 0; j < maze.length; j++) {
+      sMaze[i] += maze[i][j];
+      if (j != maze.length - 1)
+        sMaze[i] += " ";
+    }
+    String filename = String.format("data/maze%dx%d_%d.%d.%d %d.%d.%d.txt",BLOCK_CNT, BLOCK_CNT,
+    day(), month(), year(), hour(), minute(), second());
+    saveStrings(filename, sMaze);
+  }
+      
+ }
+ 
+ int [][] loadMaze(String filename) {
+   String[] sMaze = loadStrings(filename);
+   int [][] maze = new int[BLOCK_CNT][BLOCK_CNT];
+   
+   for (int i = 0; i < maze.length;i++) {
+     String[] irow = split(sMaze[i], " ");
+     if (irow.length != BLOCK_CNT) {
+       
+       println ("ERROR< window SIZE and LOADED maze SIZE do not MATCH\n irow length, BLOCK_CNT:",irow.length, BLOCK_CNT);
+       exit();
+     }
+     for (int j = 0; j < maze.length; j++) {
+       maze[i][j] = int(irow[j]);
+     }
+   }
+   return maze;
+ }
+
 boolean isValid(int [][] maze) {
   for (int row = 1; row < maze.length-1; row++) {
     for (int col = 1; col < maze.length-1; col++) {
@@ -122,25 +165,31 @@ void drawControls() {
   rect(BLOCK * BLOCK_CNT + PADDING * 2, PADDING, 90, 20);
   fill(0);
   text("Modify", BLOCK * BLOCK_CNT + PADDING + 3*PADDING * 2, PADDING+3*PADDING);
+  
+  fill(255);
+  rect(BLOCK * BLOCK_CNT + PADDING * 2, PADDING*2 + 20, 90, 20);
+  fill(0);
+  text("Save", BLOCK * BLOCK_CNT + PADDING + 3*PADDING * 2, PADDING*2 + 20 +3*PADDING);
+  
 }
 
 void controlsClicked() {
   // modify click
   if (pointInRect(mouseX, mouseY, BLOCK * BLOCK_CNT + PADDING * 2, PADDING, 90, 20))
-    modify = !modify;    
+    modify = !modify; 
+    
+  if (pointInRect(mouseX, mouseY, BLOCK * BLOCK_CNT + PADDING * 2, PADDING*2 + 20, 90, 20))
+    saveMaze();
 }
 
 /*HELPERS end*/
-final float PADDING = 5;
-final float BLOCK = 50;
-final int BLOCK_CNT = 4;
-final float DIM = BLOCK_CNT * BLOCK + 2* PADDING;
-final float CONTROLS = 100;
 void setup() {
-   maze = new int[BLOCK_CNT][BLOCK_CNT];
-  for (int i = 0; i < maze.length; i++) 
-    for (int j =0; j < maze.length; j++)
-      maze[i][j] = N|S|E|W;
+  if (LOADMAZE == null) {
+     maze = new int[BLOCK_CNT][BLOCK_CNT];
+      for (int i = 0; i < maze.length; i++) 
+        for (int j =0; j < maze.length; j++)
+          maze[i][j] = N|S|E|W;
+  } else maze = loadMaze(LOADMAZE);
   size(310,210);// BLOCK * BLOCK_CNT + PADDING * 2 + CONTROLS, BLOCK * BLOCK_CNT + PADDING * 2
   if (! isValid(maze))println("INVALID MAZE in setup !!");
 
