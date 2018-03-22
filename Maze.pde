@@ -2,8 +2,9 @@
 /*Author: Narek Galstyan*/
 
 // set to null to create a maze from scratch
-final String LOADMAZE = null;//"maze16x16onlineGenerated.txt";
-
+final String LOADMAZE = "maze16x16onlineGenerated.txt";
+final int START_X = 7,START_Y = 0;
+final int END_X = 8, END_Y = 15; 
 // go change size accordingly if these are chagned!
 final float PADDING = 5;
 final float BLOCK = 50;
@@ -23,7 +24,8 @@ boolean modify = false;
 //                      {W|E,W,S,N|E}, 
 //                      {E|W, W|S, N|E, E|W},
 //                      {W|S, N|E|S, E|W, E|W|S}}; 
-int[][] maze;
+int[][] maze = null;
+Iterable<Block> solution = null;
 /*HELPERS begin*/
 void prect(float x, float y, float w, float h, byte sides) {
   if ((sides & N) != 0) line(x,y, x+w, y);
@@ -157,6 +159,7 @@ void mazeClicked() {
     }
       
     if (! isValid(maze))println("INVALID MAZE after click !!");
+    solution = solve(maze, START_X, START_Y, END_X, END_Y);
 }
 
 void drawControls() {
@@ -195,11 +198,16 @@ void setup() {
 
   drawMaze();
   drawControls();
+  
+  //solve maze
+  solution = solve(maze, START_X, START_Y, END_X, END_Y);
 }
 
 void draw() {
+  clear();
   drawMaze();
   drawControls();
+  drawPath(solution);
   if (!modify) return;
   if (PADDING < mouseX && mouseX < PADDING + BLOCK_CNT * BLOCK &&
       PADDING < mouseY && mouseY < PADDING + BLOCK_CNT * BLOCK) {
